@@ -60,7 +60,8 @@ fi
 
 docker buildx prune -f
 
-docker build  --progress=plain --no-cache --rm -f "$DOCKER_FILE"  --build-arg "SERVER_DOCKER_GITUSER=$SERVER_DOCKER_GITUSER" -t "$TAG" "$BUILD_DIR"
+docker build --progress=plain --rm -f "$DOCKER_FILE"  --build-arg "SERVER_DOCKER_GITUSER=$SERVER_DOCKER_GITUSER" -t "$TAG" "$BUILD_DIR"
+#docker build  --progress=plain --no-cache --rm -f "$DOCKER_FILE"  --build-arg "SERVER_DOCKER_GITUSER=$SERVER_DOCKER_GITUSER" -t "$TAG" "$BUILD_DIR"
 
 if [[ "$?" != "0" ]]
 then
@@ -72,7 +73,7 @@ docker images
 
 echo "starting container '$TAG_PREFIX'"
 
-docker run --name "ubuntu-server" --network="host" -d -p "8181:8080"  -p "2222:22" "$TAG_PREFIX"
+docker run --storage-opt size=300G --name "ubuntu-server" --network="host" -d -p "8181:8080"  -p "2222:22" "$TAG_PREFIX"
 
 docker ps --all
 
