@@ -4,10 +4,10 @@
 FROM ubuntu:22.04
 
 # Environment
-ARG DYNIP_DOCKER_GITUSER=default_value
+ARG SERVER_DOCKER_GITUSER=default_value
 
 # Info
-RUN bash -c "echo starting using github user ${DYNIP_DOCKER_GITUSER} "
+RUN bash -c "echo starting using github user ${SERVER_DOCKER_GITUSER} "
 
 # Install apt-utils
 RUN apt-get update && \
@@ -20,7 +20,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y git gradle curl wget openssl net-tools && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y git gradle curl wget openssl net-tools iputils-ping traceroute autoconf pkg-config libtool emacs && \
     rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && \
@@ -37,10 +37,30 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-client && \
     rm -rf /var/lib/apt/lists/*
 
+# Colors
+RUN echo '' >> ~/.bashrc
+RUN echo 'LS_COLORS="di=1;93"' >> ~/.bashrc
+
 # Install tomcat
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y tomcat9 && \
-    rm -rf /var/lib/apt/lists/* cata
+    rm -rf /var/lib/apt/lists/*
+
+# Set the working directory
+WORKDIR /usr/local/src
+
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y automake autotools-dev bsdmainutils build-essential ccache clang gcc git libboost-dev libboost-filesystem-dev \
+    libboost-system-dev libboost-test-dev libevent-dev libminiupnpc-dev libnatpmp-dev libsqlite3-dev libtool libzmq3-dev pkg-config python3 qtbase5-dev qttools5-dev \
+    qttools5-dev-tools qtwayland5 systemtap-sdt-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/${SERVER_DOCKER_GITUSER}/GIT-blockchain-bitcoin.git
+
+# Set the working directory
+WORKDIR /usr/local/src/GIT-blockchain-bitcoin/bin
+
+RUN ./c
 
 # Set the working directory
 WORKDIR /usr/local/src
