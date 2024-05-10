@@ -62,6 +62,10 @@ WORKDIR /usr/local/src/GIT-blockchain-bitcoin/bin
 
 RUN chmod 700 ./c
 
+ARG CACHEBUST
+
+RUN echo "$CACHEBUST"
+
 RUN ./c
 
 # Set the working directory
