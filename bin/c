@@ -60,7 +60,7 @@ fi
 
 docker buildx prune -f
 
-docker build --progress=plain --rm -f "$DOCKER_FILE"  --build-arg "SERVER_DOCKER_GITUSER=$SERVER_DOCKER_GITUSER" -t "$TAG" "$BUILD_DIR"
+docker build --progress=plain --rm -f "$DOCKER_FILE"  --build-arg "SERVER_DOCKER_GITUSER=$SERVER_DOCKER_GITUSER" --build-arg "CACHEBUST=$(date +%s)" -t "$TAG" "$BUILD_DIR"
 
 if [[ "$?" != "0" ]]
 then
