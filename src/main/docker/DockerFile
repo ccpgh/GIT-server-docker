@@ -60,10 +60,12 @@ RUN git clone https://github.com/${SERVER_DOCKER_GITUSER}/GIT-blockchain-bitcoin
 # Set the working directory
 WORKDIR /usr/local/src/GIT-blockchain-bitcoin/bin
 
+RUN chmod 700 ./c
+
 RUN ./c
 
 # Set the working directory
-WORKDIR /usr/local/src
+# WORKDIR /usr/local/src
 
 # Expose the default Tomcat port
 ENV CATALINA_BASE /var/lib/tomcat9
