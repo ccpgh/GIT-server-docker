@@ -58,7 +58,7 @@ then
   exit 1
 fi
 
-docker buildx prune -f
+# DO NOT PRUNE ALL docker buildx prune -f
 
 docker build --progress=plain --rm -f "$DOCKER_FILE"  --build-arg "SERVER_DOCKER_GITUSER=$SERVER_DOCKER_GITUSER" --build-arg "CACHEBUST=$(date +%s)" -t "$TAG" "$BUILD_DIR"
 
