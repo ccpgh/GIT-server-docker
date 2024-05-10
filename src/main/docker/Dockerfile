@@ -64,7 +64,7 @@ RUN chmod 700 ./c
 
 ARG CACHEBUST
 
-RUN echo "$CACHEBUST"
+RUN echo "CACHEBUST is '$CACHEBUST'"
 
 RUN ./c
 
