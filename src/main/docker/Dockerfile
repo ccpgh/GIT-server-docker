@@ -55,16 +55,17 @@ RUN apt-get update && \
     qttools5-dev-tools qtwayland5 systemtap-sdt-dev && \
     rm -rf /var/lib/apt/lists/*
 
-RUN git clone https://github.com/${SERVER_DOCKER_GITUSER}/GIT-blockchain-bitcoin.git
-
-# Set the working directory
-WORKDIR /usr/local/src/GIT-blockchain-bitcoin/bin
-
-RUN chmod 700 ./c
-
 ARG CACHEBUST
 
 RUN echo "CACHEBUST is '$CACHEBUST'"
+
+RUN git clone https://github.com/${SERVER_DOCKER_GITUSER}/GIT-blockchain-bitcoin.git
+
+WORKDIR /usr/local/src/GIT-blockchain-bitcoin/bin
+
+RUN ls -l
+
+RUN chmod 700 ./c
 
 RUN ./c
 
