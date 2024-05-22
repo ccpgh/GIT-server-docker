@@ -59,15 +59,15 @@ ARG CACHEBUST
 
 RUN echo "CACHEBUST is '$CACHEBUST'"
 
-RUN git clone https://github.com/${SERVER_DOCKER_GITUSER}/GIT-blockchain-bitcoin.git
+RUN git clone https://github.com/${SERVER_DOCKER_GITUSER}/blockchain-bitcoin.git
 
-WORKDIR /usr/local/src/GIT-blockchain-bitcoin/bin
+WORKDIR /usr/local/src/blockchain-bitcoin/bin
 
 RUN ls -l
 
 RUN chmod 700 ./c
 
-RUN ./c
+RUN ./c -GITUSER "${SERVER_DOCKER_GITUSER}"
 
 # Set the working directory
 # WORKDIR /usr/local/src
