@@ -1,13 +1,23 @@
 #!/bin/bash
 
+if [[ "${OSTYPE}" != "linux-gnu"* && "${OSTYPE}" != "darwin"* ]]
+then
+  echo "error: only linux and macOS supported"
+  exit 1
+fi
+
 DOCKER_FILE=src/main/docker/Dockerfile
 BUILD_DIR=build
 TAG_ORG=shlibnet
-TAG_ID=ubuntu-server
+TAG_ID=bitcoin-server
 TAG_VERSION=latest
 TAG_PREFIX="$TAG_ORG/$TAG_ID"
 TAG="$TAG_PREFIX:$TAG_VERSION"
-SERVER_DOCKER_GITUSER=ccpgh
+SERVER_DOCKER_GITUSER=ccrepo
+SERVER_DOCKER_BITCOIN_VERSION=
+#v27.0
+
+echo "TAG_PREFIX='${TAG_PREFIX}'"
 
 for i in ` (docker ps 2>&1) | grep -v 'CONTAINER ID' | grep "${TAG_PREFIX}" | cut -d' ' -f1`
 do
@@ -60,7 +70,7 @@ fi
 
 # DO NOT PRUNE ALL docker buildx prune -f
 
-docker build --progress=plain --rm -f "$DOCKER_FILE"  --build-arg "SERVER_DOCKER_GITUSER=$SERVER_DOCKER_GITUSER" --build-arg "CACHEBUST=$(date +%s)" -t "$TAG" "$BUILD_DIR"
+docker build --progress=plain --rm -f "$DOCKER_FILE"  --build-arg "SERVER_DOCKER_GITUSER=$SERVER_DOCKER_GITUSER"  --build-arg "SERVER_DOCKER_BITCOIN_VERSION=$SERVER_DOCKER_BITCOIN_VERSION" --build-arg "CACHEBUST=$(date +%s)" -t "$TAG" "$BUILD_DIR"
 
 if [[ "$?" != "0" ]]
 then
@@ -70,12 +80,39 @@ fi
 
 docker images
 
+BITCOIN_VOLUME="`( docker volume ls 2>/dev/null ) | grep -v 'VOLUME NAME' | awk '{ print $2}' | grep '^bitcoinfs$' `"
+
+echo "BITCOIN_VOLUME=${BITCOIN_VOLUME}"
+
+if [[ "${BITCOIN_VOLUME}" == "" ]]
+then
+  if [[ -d /data/bitcoin/volumes/1/bitcoinfs ]]
+  then
+    echo "creating volume 'bitcoinfs'."
+    
+    docker volume create --driver local --opt type=none --opt device=/data/bitcoin/volumes/1/bitcoinfs --opt o=bind bitcoinfs
+    
+    if [[ "$?" != "0" ]]
+    then
+      echo "could not create volume 'bitcoinfs'."
+      exit 1
+    fi
+  fi
+fi
+
 echo "starting container '$TAG_PREFIX'"
 
-docker run --name "$TAG_ID" -d -p "8181:8080"  -p "2222:22" "$TAG_PREFIX"
-#--storage-opt size=300G
+VOLUME_COUNT="`docker volume ls | grep bitcoinfs | wc -l | awk '{print $1}'`"
+ 
+if [[ "${VOLUME_COUNT}" == "0" ]]
+then
+  echo "running without /data volume"
+  docker run --name "$TAG_ID" -d -p "8181:8080"  -p "2222:22" "$TAG_PREFIX"
+else
+  echo "running with /data volume"
+  docker run --name "$TAG_ID" -d -p "8181:8080"  -p "2222:22" -v bitcoinfs:/root/.bitcoin "$TAG_PREFIX"
+fi
 
 docker ps --all
 
 docker exec -it "$TAG_ID" bash
-

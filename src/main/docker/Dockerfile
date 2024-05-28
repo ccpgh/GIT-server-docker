@@ -6,8 +6,10 @@ FROM ubuntu:22.04
 # Environment
 ARG SERVER_DOCKER_GITUSER=default_value
 
+ARG SERVER_DOCKER_BITCOIN_VERSION=default_value
+
 # Info
-RUN bash -c "echo starting using github user ${SERVER_DOCKER_GITUSER} "
+RUN bash -c "echo starting using github user SERVER_DOCKER_GITUSER = '${SERVER_DOCKER_GITUSER}' and SERVER_DOCKER_BITCOIN_VERSION = '${SERVER_DOCKER_BITCOIN_VERSION}' "
 
 # Install apt-utils
 RUN apt-get update && \
@@ -67,7 +69,7 @@ RUN ls -l
 
 RUN chmod 700 ./c
 
-RUN ./c -GITUSER "${SERVER_DOCKER_GITUSER}"
+RUN ./c -GITUSER "${SERVER_DOCKER_GITUSER}" -BITCOIN_VERSION "${SERVER_DOCKER_BITCOIN_VERSION}"
 
 # Set the working directory
 # WORKDIR /usr/local/src
@@ -77,6 +79,9 @@ ENV CATALINA_BASE /var/lib/tomcat9
 ENV CATALINA_HOME /usr/share/tomcat9
 ENV PATH $CATALINA_HOME/bin:$PATH
 EXPOSE 8080
+
+# Create data dir for volume data
+RUN mkdir /data 2>/dev/null
 
 # Expose the default ssh port
 EXPOSE 22
