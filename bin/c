@@ -6,6 +6,24 @@ then
   exit 1
 fi
 
+if [[ "$#" != "2" ]]
+then
+  echo "error: missing arguments. usage: -FULL_NODE (Y|N) "
+  exit 1
+fi
+
+if [[ "$1" != "-FULL_NODE" ]]
+then
+  echo "error: missing argument -FULL_NODE. usage: -FULL_NODE (Y|N) "
+  exit 1
+fi
+
+if [[ "$2" != "Y" && "$2" != "N" ]]
+then
+  echo "error: invalid argument -FULL_NODE. usage: -FULL_NODE (Y|N) "
+  exit 1
+fi
+
 DOCKER_FILE=src/main/docker/Dockerfile
 BUILD_DIR=build
 TAG_ORG=shlibnet
@@ -16,6 +34,7 @@ TAG="$TAG_PREFIX:$TAG_VERSION"
 SERVER_DOCKER_GITUSER=ccrepo
 SERVER_DOCKER_BITCOIN_VERSION=
 #v27.0
+FULL_NODE=$2
 
 echo "TAG_PREFIX='${TAG_PREFIX}'"
 
@@ -80,37 +99,45 @@ fi
 
 docker images
 
-BITCOIN_VOLUME="`( docker volume ls 2>/dev/null ) | grep -v 'VOLUME NAME' | awk '{ print $2}' | grep '^bitcoinfs$' `"
-
-echo "BITCOIN_VOLUME=${BITCOIN_VOLUME}"
-
-if [[ "${BITCOIN_VOLUME}" == "" ]]
+if [[ "${FULL_NODE}" == "Y" ]]
 then
-  if [[ -d /data/bitcoin/volumes/1/bitcoinfs ]]
+
+  BITCOIN_VOLUME="`( docker volume ls 2>/dev/null ) | grep -v 'VOLUME NAME' | awk '{ print $2}' | grep '^bitcoinfs$' `"
+
+  echo "BITCOIN_VOLUME=${BITCOIN_VOLUME}"
+
+  if [[ "${BITCOIN_VOLUME}" == "" ]]
   then
-    echo "creating volume 'bitcoinfs'."
-    
-    docker volume create --driver local --opt type=none --opt device=/data/bitcoin/volumes/1/bitcoinfs --opt o=bind bitcoinfs
-    
-    if [[ "$?" != "0" ]]
+    if [[ -d /data/bitcoin/volumes/1/bitcoinfs ]]
     then
-      echo "could not create volume 'bitcoinfs'."
-      exit 1
+      echo "creating volume 'bitcoinfs'."
+    
+      docker volume create --driver local --opt type=none --opt device=/data/bitcoin/volumes/1/bitcoinfs --opt o=bind bitcoinfs
+    
+      if [[ "$?" != "0" ]]
+      then
+        echo "could not create volume 'bitcoinfs'."
+        exit 1
+      fi
     fi
   fi
-fi
 
-echo "starting container '$TAG_PREFIX'"
+  echo "starting container '$TAG_PREFIX'"
 
-VOLUME_COUNT="`docker volume ls | grep bitcoinfs | wc -l | awk '{print $1}'`"
+  VOLUME_COUNT="`docker volume ls | grep bitcoinfs | wc -l | awk '{print $1}'`"
  
-if [[ "${VOLUME_COUNT}" == "0" ]]
-then
-  echo "running without /data volume"
-  docker run --name "$TAG_ID" -d -p "8181:8080"  -p "2222:22" "$TAG_PREFIX"
+  if [[ "${VOLUME_COUNT}" == "0" ]]
+  then
+    echo "running without /data volume"
+    docker run --name "$TAG_ID" -d -p "8181:8080"  -p "2222:22" "$TAG_PREFIX"
+  else
+    echo "running with /data volume"
+    docker run --name "$TAG_ID" -d -p "8181:8080"  -p "2222:22" -v bitcoinfs:/root/.bitcoin "$TAG_PREFIX"
+  fi
+
 else
-  echo "running with /data volume"
-  docker run --name "$TAG_ID" -d -p "8181:8080"  -p "2222:22" -v bitcoinfs:/root/.bitcoin "$TAG_PREFIX"
+  echo "running"
+  docker run --name "$TAG_ID" -d -p "8181:8080"  -p "2222:22" "$TAG_PREFIX"
 fi
 
 docker ps --all
