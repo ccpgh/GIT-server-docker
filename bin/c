@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# =============================
+# FUNCTION
+# =============================
+
+usage () {
+  echo "$1 usage: -FULL_NODE (Y|N) "
+}
+
+# =============================
+# PREAMBLE
+# =============================
+
 if [[ "${OSTYPE}" != "linux-gnu"* && "${OSTYPE}" != "darwin"* ]]
 then
   echo "error: only linux and macOS supported"
@@ -8,21 +20,25 @@ fi
 
 if [[ "$#" != "2" ]]
 then
-  echo "error: missing arguments. usage: -FULL_NODE (Y|N) "
+  usage "error: missing argument."
   exit 1
 fi
 
 if [[ "$1" != "-FULL_NODE" ]]
 then
-  echo "error: missing argument -FULL_NODE. usage: -FULL_NODE (Y|N) "
+  usage "error: missing argument -FULL_NODE."
   exit 1
 fi
 
 if [[ "$2" != "Y" && "$2" != "N" ]]
 then
-  echo "error: invalid argument -FULL_NODE. usage: -FULL_NODE (Y|N) "
+  usage "error: invalid argument -FULL_NODE."
   exit 1
 fi
+
+# =============================
+# VARIABLES
+# =============================
 
 DOCKER_FILE=src/main/docker/Dockerfile
 BUILD_DIR=build
@@ -35,6 +51,15 @@ SERVER_DOCKER_GITUSER=ccrepo
 SERVER_DOCKER_BITCOIN_VERSION=
 #v27.0
 FULL_NODE=$2
+
+if [[ "${OSTYPE}" != "darwin"* ]]
+then
+  PROGRESS_PARAM='--progress=plain'
+fi
+
+# =============================
+# ACTION
+# =============================
 
 echo "TAG_PREFIX='${TAG_PREFIX}'"
 
@@ -89,7 +114,7 @@ fi
 
 # DO NOT PRUNE ALL docker buildx prune -f
 
-docker build --progress=plain --rm -f "$DOCKER_FILE"  --build-arg "SERVER_DOCKER_GITUSER=$SERVER_DOCKER_GITUSER"  --build-arg "SERVER_DOCKER_BITCOIN_VERSION=$SERVER_DOCKER_BITCOIN_VERSION" --build-arg "CACHEBUST=$(date +%s)" -t "$TAG" "$BUILD_DIR"
+docker build $PROGRESS_PARAM --rm -f "$DOCKER_FILE"  --build-arg "SERVER_DOCKER_GITUSER=$SERVER_DOCKER_GITUSER"  --build-arg "SERVER_DOCKER_BITCOIN_VERSION=$SERVER_DOCKER_BITCOIN_VERSION" --build-arg "FULL_NODE=$FULL_NODE" --build-arg "CACHEBUST=$(date +%s)" -t "$TAG" "$BUILD_DIR"
 
 if [[ "$?" != "0" ]]
 then
@@ -101,9 +126,7 @@ docker images
 
 if [[ "${FULL_NODE}" == "Y" ]]
 then
-
   BITCOIN_VOLUME="`( docker volume ls 2>/dev/null ) | grep -v 'VOLUME NAME' | awk '{ print $2}' | grep '^bitcoinfs$' `"
-
   echo "BITCOIN_VOLUME=${BITCOIN_VOLUME}"
 
   if [[ "${BITCOIN_VOLUME}" == "" ]]
