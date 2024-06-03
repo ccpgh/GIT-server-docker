@@ -52,7 +52,7 @@ SERVER_DOCKER_BITCOIN_VERSION=
 #v27.0
 FULL_NODE=$2
 
-if [[ "${OSTYPE}" != "darwin"* ]]
+if [[ "${OSTYPE}" == "darwin"* ]]
 then
   PROGRESS_PARAM='--progress=plain'
 fi
