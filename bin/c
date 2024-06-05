@@ -163,6 +163,8 @@ else
   docker run --name "$TAG_ID" -d -p "8181:8080"  -p "2222:22" "$TAG_PREFIX"
 fi
 
+sleep 10
+
 docker ps --all
 
 docker exec -it "$TAG_ID" bash
