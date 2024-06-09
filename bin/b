@@ -1,11 +1,18 @@
 #!/bin/bash
 
 # =============================
+# CONSTANTS
+# =============================
+
+DEFAULT_INSTANCE_COUNT=2
+DEFAULT_REMOVE=Y
+
+# =============================
 # FUNCTION
 # =============================
 
 usage () {
-  echo "$1 usage: [-INSTANCE_COUNT <number>] [ -REMOVE (Y|N) ] - defaults -INSTANCE_COUNT 2 -REMOVE Y "
+  echo "$1 usage: [-INSTANCE_COUNT <number <=10 >] [ -REMOVE (Y|N) ] - defaults -INSTANCE_COUNT ${DEFAULT_INSTANCE_COUNT} -REMOVE ${DEFAULT_REMOVE} "
 }
 
 instance_count () {
@@ -34,6 +41,19 @@ instance_count () {
 }
 
 remove() {
+  if [[ "$1" != "-REMOVE" ]]
+  then
+    usage "error: invalid argument '$1'."
+    exit 1
+  fi
+
+  if [[ "$2" != "N" && "$2" != "Y" ]]
+  then
+    usage "error: invalid argument '$2'."
+    exit 1
+  fi
+
+  REMOVE="$2"
 }
 
 # =============================
@@ -52,17 +72,25 @@ then
   exit 1
 fi
 
-INSTANCE_COUNT=""
-INSTANCE_REMOVE=""
+INSTANCE_COUNT=
+REMOVE=
 
 if [[ "$1" == "-INSTANCE_COUNT" ]]
 then
   instance_count "$1" "$2"
 
+  if [[ "$#" == "4" ]]
+  then
+    remove "$3" "$4"
+  else
+    REMOVE=${DEFAULT_REMOVE}
+  fi
+
 elif [[ "$1" == "-REMOVE" ]]
 then
-  echo B
+  remove "$1" "$2"
 
+  INSTANCE_COUNT=2
 else
   if [[ "$#" != "0" ]]
   then
@@ -71,9 +99,15 @@ else
   fi
 
   INSTANCE_COUNT=2
-  INSTANCE_REMOVE=N
+  REMOVE=${DEFAULT_REMOVE}
 fi
 
 echo "INSTANCE_COUNT='${INSTANCE_COUNT}'"
-echo "INSTANCE_REMOVE='${INSTANCE_REMOVE}'"
+echo "REMOVE='${REMOVE}'"
+
+if [[ ${INSTANCE_COUNT} -gt "10" ]]
+then
+  usage "INSTANCE_COUNT is > 10."
+  exit 1
+fi
 
