@@ -1,0 +1,79 @@
+#!/bin/bash
+
+# =============================
+# FUNCTION
+# =============================
+
+usage () {
+  echo "$1 usage: [-INSTANCE_COUNT <number>] [ -REMOVE (Y|N) ] - defaults -INSTANCE_COUNT 2 -REMOVE Y "
+}
+
+instance_count () {
+  FLAG="`echo "$2" | grep '^[0][0123456789]*$' | wc -l | awk '{ print $1 }'`"
+
+  if [[ "${FLAG}" == "1" ]]
+  then
+    usage "error: invalid INSTANCE_COUNT value '$2'"
+    exit 1
+  fi
+
+  FLAG="`echo "$2" | grep '^[0123456789]*$' | wc -l | awk '{ print $1 }'`"
+
+  if [[ "${FLAG}" == "1" ]]
+  then
+    if [[ $2 -eq -0 ]]
+    then
+      usage "error: invalid INSTANCE_COUNT value '$2'"
+      exit 1
+    fi
+    INSTANCE_COUNT=$2
+  else
+    usage "error: invalid INSTANCE_COUNT value '$2'"
+    exit 1
+  fi
+}
+
+remove() {
+}
+
+# =============================
+# PREAMBLE
+# =============================
+
+if [[ "${OSTYPE}" != "linux-gnu"* && "${OSTYPE}" != "darwin"* ]]
+then
+  echo "error: only linux and macOS supported"
+  exit 1
+fi
+
+if [[ "$#" != "0" && "$#" != "2" && "$#" != "4" ]]
+then
+  usage "error: invalid arguments."
+  exit 1
+fi
+
+INSTANCE_COUNT=""
+INSTANCE_REMOVE=""
+
+if [[ "$1" == "-INSTANCE_COUNT" ]]
+then
+  instance_count "$1" "$2"
+
+elif [[ "$1" == "-REMOVE" ]]
+then
+  echo B
+
+else
+  if [[ "$#" != "0" ]]
+  then
+    usage "error: invalid parameters"
+    exit 1
+  fi
+
+  INSTANCE_COUNT=2
+  INSTANCE_REMOVE=N
+fi
+
+echo "INSTANCE_COUNT='${INSTANCE_COUNT}'"
+echo "INSTANCE_REMOVE='${INSTANCE_REMOVE}'"
+
