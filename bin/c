@@ -40,16 +40,8 @@ fi
 # VARIABLES
 # =============================
 
-DOCKER_FILE=src/main/docker/Dockerfile
-BUILD_DIR=build
-TAG_ORG=shlibnet
-TAG_ID=bitcoin-server
-TAG_VERSION=latest
-TAG_PREFIX="$TAG_ORG/$TAG_ID"
-TAG="$TAG_PREFIX:$TAG_VERSION"
-SERVER_DOCKER_GITUSER=ccrepo
-SERVER_DOCKER_BITCOIN_VERSION=
-#v27.0
+. ./env
+
 FULL_NODE=$2
 
 if [[ "${OSTYPE}" == "darwin"* ]]
@@ -114,7 +106,9 @@ fi
 
 # DO NOT PRUNE ALL docker buildx prune -f
 
-docker build $PROGRESS_PARAM --rm -f "$DOCKER_FILE"  --build-arg "SERVER_DOCKER_GITUSER=$SERVER_DOCKER_GITUSER"  --build-arg "SERVER_DOCKER_BITCOIN_VERSION=$SERVER_DOCKER_BITCOIN_VERSION" --build-arg "FULL_NODE=$FULL_NODE" --build-arg "CACHEBUST=$(date +%s)" -t "$TAG" "$BUILD_DIR"
+docker build $PROGRESS_PARAM --rm -f "$DOCKER_FILE"  --build-arg "SERVER_DOCKER_GITUSER=$SERVER_DOCKER_GITUSER" \
+ --build-arg "SERVER_DOCKER_BITCOIN_VERSION=$SERVER_DOCKER_BITCOIN_VERSION" --build-arg "FULL_NODE=$FULL_NODE" \
+ --build-arg "CACHEBUST=$(date +%s)" -t "$TAG" "$BUILD_DIR"
 
 if [[ "$?" != "0" ]]
 then
