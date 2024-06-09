@@ -64,8 +64,10 @@ EXPOSE 8080
 # Create data dir for volume data
 RUN mkdir /data 2>/dev/null
 
-# Expose the default ssh port
+# Expose ports
 EXPOSE 22
+EXPOSE 8080
+EXPOSE 18444
 
 # # Start when the container starts
 ENTRYPOINT ( service ssh start ) && ( tail -f /dev/null )
