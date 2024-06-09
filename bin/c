@@ -155,12 +155,12 @@ then
     docker run --name "$TAG_ID" -d -p "8181:8080"  -p "2222:22" -p "18444:18444" "$TAG_PREFIX"
   else
     echo "running with /data volume"
-    docker run --name "$TAG_ID" -d -p "8181:8080"  -p "2222:22" -p "18444:18444" -v bitcoinfs:/root/.bitcoin "$TAG_PREFIX"
+    docker run --name "$TAG_ID" -d -p "8180:8080"  -p "2222:22" -p "18444:18444" -v bitcoinfs:/root/.bitcoin "$TAG_PREFIX"
   fi
 
 else
   echo "running"
-  docker run --name "$TAG_ID" -d -p "8181:8080"  -p "2222:22" -p "18444:18444" "$TAG_PREFIX"
+  docker run --name "$TAG_ID" -d -p "8180:8080"  -p "2222:22" -p "18444:18444" "$TAG_PREFIX"
 fi
 
 sleep 10
