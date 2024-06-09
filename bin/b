@@ -1,6 +1,18 @@
 #!/bin/bash
 
 # =============================
+# READ EMV
+# =============================
+
+if [[ ! -f "./env" ]]
+then
+  echo "./env file missing"
+  exit 1
+fi
+
+. ./env
+
+# =============================
 # CONSTANTS
 # =============================
 
@@ -111,3 +123,12 @@ then
   exit 1
 fi
 
+X=1
+
+while [[ $X -le $INSTANCE_COUNT ]]
+do
+  TAG_ID_INSTANCE="${TAG_ID}_${X}"
+  echo "TAG_ID_INSTANCE=${TAG_ID_INSTANCE}"
+
+  let X=$((X + 1))
+done
