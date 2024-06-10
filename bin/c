@@ -139,7 +139,8 @@ then
     then
       echo "creating volume 'bitcoinfs'."
     
-      docker volume create --driver local --opt type=none --opt device=/data/bitcoin/volumes/1/bitcoinfs --opt o=bind bitcoinfs
+      docker volume create --driver local --opt type=none --opt device=/data/bitcoin/volumes/1/bitcoinfs \
+      --opt o=bind bitcoinfs
     
       if [[ "$?" != "0" ]]
       then
@@ -156,15 +157,21 @@ then
   if [[ "${VOLUME_COUNT}" == "0" ]]
   then
     echo "running without /data volume"
-    docker run --name "$TAG_ID" -d -p "8180:8080"  -p "2222:22" -p "18444:18444" "$TAG_PREFIX"
+    docker run --name "$TAG_ID" -d -p "${HTTP_EXTERNAL_PORT}:${HTTP_INTERNAL_PORT}" \
+     -p "${SSH_EXTERNAL_PORT}:${SSH_INTERNAL_PORT}" -p "${BITCOIN_EXTERNAL_PORT}:${BITCOIN_INTERNAL_PORT}" \
+     "$TAG_PREFIX"
   else
     echo "running with /data volume"
-    docker run --name "$TAG_ID" -d -p "8180:8080"  -p "2222:22" -p "18444:18444" -v bitcoinfs:/root/.bitcoin "$TAG_PREFIX"
+    docker run --name "$TAG_ID" -d -p "${HTTP_EXTERNAL_PORT}:${HTTP_INTERNAL_PORT}" \
+     -p "${SSH_EXTERNAL_PORT}:${SSH_INTERNAL_PORT}" -p "${BITCOIN_EXTERNAL_PORT}:${BITCOIN_INTERNAL_PORT}" \
+     -v bitcoinfs:/root/.bitcoin "$TAG_PREFIX"
   fi
 
 else
   echo "running"
-  docker run --name "$TAG_ID" -d -p "8180:8080"  -p "2222:22" -p "18444:18444" "$TAG_PREFIX"
+  docker run --name "$TAG_ID" -d -p "${HTTP_EXTERNAL_PORT}:${HTTP_INTERNAL_PORT}" \
+   -p "${SSH_EXTERNAL_PORT}:${SSH_INTERNAL_PORT}" -p "${BITCOIN_EXTERNAL_PORT}:${BITCOIN_INTERNAL_PORT}" \
+   "$TAG_PREFIX"
 fi
 
 sleep 10

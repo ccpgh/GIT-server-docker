@@ -59,7 +59,6 @@ RUN ./c -GITUSER "${SERVER_DOCKER_GITUSER}" -FULL_NODE "${FULL_NODE}" -BITCOIN_V
 ENV CATALINA_BASE /var/lib/tomcat9
 ENV CATALINA_HOME /usr/share/tomcat9
 ENV PATH $CATALINA_HOME/bin:$PATH
-EXPOSE 8080
 
 # Create data dir for volume data
 RUN mkdir /data 2>/dev/null
@@ -70,4 +69,4 @@ EXPOSE 8080
 EXPOSE 18444
 
 # # Start when the container starts
-ENTRYPOINT ( service ssh start ) && ( tail -f /dev/null )
+ENTRYPOINT ( catalina.sh start ) && ( service ssh start ) && ( tail -f /dev/null )
