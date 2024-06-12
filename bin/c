@@ -12,12 +12,35 @@ fi
 
 . ./env
 
+FULL_NODE_DEFAULT=N
+BITCOIN_GIT_DEVUSER_DEFAULT=${SERVER_DOCKER_GITUSER}
+
 # =============================
 # FUNCTION
 # =============================
 
 usage () {
-  echo "$1 usage: -FULL_NODE (Y|N) "
+  echo "$1 usage: [ -FULL_NODE (Y|N) ] [ -BITCOIN_GIT_DEVUSER <git-devuser> ] - defaults -FULL_NODE N -BITCOIN_GIT_DEVUSER ccrepo"
+}
+
+full_node() {
+  if [[ "$2" != "Y" && "$2" != "N" ]]
+  then
+    usage "error: invalid argument -FULL_NODE '$2'."
+    exit 1
+  fi
+  
+  FULL_NODE=$2
+}
+
+bitcoin_git_devuser() {
+  if [[ "$2" == "" ]]
+  then
+    usage "error: invalid argument -BITCOIN_GIT_DEVUSER '$2'."
+    exit 1
+  fi
+
+  BITCOIN_GIT_DEVUSER="$2"
 }
 
 # =============================
@@ -30,23 +53,48 @@ then
   exit 1
 fi
 
-if [[ "$#" != "2" ]]
+if [[ "$#" != "0" && "$#" != "2" && "$#" != "4" ]]
 then
-  usage "error: missing argument."
+  usage "error: wrong number of arguments."
   exit 1
 fi
 
-if [[ "$1" != "-FULL_NODE" ]]
+if [[ "$1" == "-FULL_NODE" ]]
 then
-  usage "error: missing argument -FULL_NODE."
-  exit 1
+  full_node "$1" "$2"
+
+  if [[ "$#" == "2" ]]
+  then
+    BITCOIN_GIT_DEVUSER="${BITCOIN_GIT_DEVUSER_DEFAULT}"
+    
+  elif [[ "$3" == "-BITCOIN_GIT_DEVUSER" ]]
+  then
+    bitcoin_git_devuser "$3" "$4"
+
+  else
+    usage "error: invalid parameters."
+    exit 1
+  fi
+
+elif [[ "$1" == "-BITCOIN_GIT_DEVUSER" ]]
+then
+  bitcoin_git_devuser "$1" "$2"
+
+  if [[ "$#" != "2" ]]
+  then
+    usage "error: invalid parameters."
+    exit 1
+  fi
+
+  FULL_NODE="${FULL_NODE_DEFAULT}"
+  
+else
+  FULL_NODE="${FULL_NODE_DEFAULT}"
+  BITCOIN_GIT_DEVUSER="${BITCOIN_GIT_DEVUSER_DEFAULT}"
 fi
 
-if [[ "$2" != "Y" && "$2" != "N" ]]
-then
-  usage "error: invalid argument -FULL_NODE."
-  exit 1
-fi
+echo "FULL_NODE='${FULL_NODE}'"
+echo "BITCOIN_GIT_DEVUSER='${BITCOIN_GIT_DEVUSER}'"
 
 # =============================
 # VARIABLES
@@ -118,7 +166,7 @@ fi
 
 docker build $PROGRESS_PARAM --rm -f "$DOCKER_FILE"  --build-arg "SERVER_DOCKER_GITUSER=$SERVER_DOCKER_GITUSER" \
  --build-arg "SERVER_DOCKER_BITCOIN_VERSION=$SERVER_DOCKER_BITCOIN_VERSION" --build-arg "FULL_NODE=$FULL_NODE" \
- --build-arg "CACHEBUST=$(date +%s)" -t "$TAG" "$BUILD_DIR"
+ --build-arg "BITCOIN_GIT_DEVUSER=$BITCOIN_GIT_DEVUSER" --build-arg "CACHEBUST=$(date +%s)" -t "$TAG" "$BUILD_DIR"
 
 if [[ "$?" != "0" ]]
 then
