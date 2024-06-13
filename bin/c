@@ -140,22 +140,29 @@ done
 
 docker images -a
 
-echo "checking network ${DOCKER_NETWORK_SUBSET}"
+echo "checking network '${DOCKER_NETWORK_SUBSET}' using '${DOCKER_NETWORK_SUBSET_IP}' and '${DOCKER_NETWORK_NAME}' "
 
 FOUND=N
 
 for i in `docker network ls | awk '{ print $1 }' | grep -vi 'network'`
 do
-  SUBNET_COUNT="`docker network inspect $i | grep -i "${DOCKER_NETWORK_SUBSET}" | grep -l "Subnet:" | wc -l | awk '{ print $1 }'`"
-  if [[ "${SUBNET_COUNT}" -ne "0" ]]
+  SUBNET_COUNT="`docker network inspect $i | grep -i "${DOCKER_NETWORK_SUBSET_IP}" | grep -l "Subnet" | wc -l | awk '{ print $1 }'`"
+  NAME_COUNT="`docker network inspect $i | grep -i "${DOCKER_NETWORK_NAME}" | grep -l "Name" | wc -l | awk '{ print $1 }'`"
+  SUBNET_COUNT=0
+
+  if [[ "${NAME_COUNT}" -ne "0" || "${SUBNET_COUNT}" -ne "0" ]]
   then
     FOUND=Y
+    break
   fi
 done
 
 if [[ "${FOUND}" == "N" ]]
 then
-  echo docker network create --subnet="${DOCKER_NETWORK_SUBSET}" "${DOCKER_NETWORK_NAME}"
+  echo "creating network '${DOCKER_NETWORK_NAME}' with subnet '${DOCKER_NETWORK_SUBSET}' "
+  docker network create --subnet="${DOCKER_NETWORK_SUBSET}" "${DOCKER_NETWORK_NAME}"
+else
+  echo "creating network SKIP"
 fi
 
 cd ..
