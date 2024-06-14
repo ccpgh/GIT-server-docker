@@ -248,13 +248,13 @@ then
     echo "running without /data volume"
     docker run --net "${DOCKER_NETWORK_NAME}" --ip "${DOCKER_NETWORK_START_IP}" --hostname "${DOCKER_NETWORK_NAME}0" \
      --name "$TAG_ID" -d -p "${HTTP_EXTERNAL_PORT}:${HTTP_INTERNAL_PORT}" \
-     -p "${SSH_EXTERNAL_PORT}:${SSH_INTERNAL_PORT}" -p "${BITCOIN_EXTERNAL_PORT}:${BITCOIN_INTERNAL_PORT}" \
+     -p "${SSH_EXTERNAL_PORT}:${SSH_INTERNAL_PORT}" -p "${BITCOIN_EXTERNAL_PORT_BUILD}:${BITCOIN_INTERNAL_PORT}" \
      "$TAG_PREFIX"
   else
     echo "running with /data volume"
     docker run --net "${DOCKER_NETWORK_NAME}" --ip "${DOCKER_NETWORK_START_IP}" --hostname "${DOCKER_NETWORK_NAME}0" \
      --name "$TAG_ID" -d -p "${HTTP_EXTERNAL_PORT}:${HTTP_INTERNAL_PORT}" \
-     -p "${SSH_EXTERNAL_PORT}:${SSH_INTERNAL_PORT}" -p "${BITCOIN_EXTERNAL_PORT}:${BITCOIN_INTERNAL_PORT}" \
+     -p "${SSH_EXTERNAL_PORT}:${SSH_INTERNAL_PORT}" -p "${BITCOIN_EXTERNAL_PORT_BUILD}:${BITCOIN_INTERNAL_PORT}" \
      -v bitcoinfs:/root/.bitcoin "$TAG_PREFIX"
   fi
 
@@ -262,7 +262,7 @@ else
   echo "running"
   docker run --net "${DOCKER_NETWORK_NAME}" --ip "${DOCKER_NETWORK_START_IP}" --hostname "${DOCKER_NETWORK_NAME}0" \
    --name "$TAG_ID" -d -p "${HTTP_EXTERNAL_PORT}:${HTTP_INTERNAL_PORT}" \
-   -p "${SSH_EXTERNAL_PORT}:${SSH_INTERNAL_PORT}" -p "${BITCOIN_EXTERNAL_PORT}:${BITCOIN_INTERNAL_PORT}" \
+   -p "${SSH_EXTERNAL_PORT}:${SSH_INTERNAL_PORT}" -p "${BITCOIN_EXTERNAL_PORT_BUILD}:${BITCOIN_INTERNAL_PORT}" \
    "$TAG_PREFIX"
 fi
 

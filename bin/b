@@ -23,18 +23,11 @@ fi
 . ./env
 
 # =============================
-# CONSTANTS
-# =============================
-
-DEFAULT_INSTANCE_COUNT=2
-DEFAULT_REMOVE=Y
-
-# =============================
 # FUNCTION
 # =============================
 
 usage () {
-  echo "$1 usage: [-INSTANCE_COUNT <number <=10 >] [ -REMOVE (Y|N) ] - defaults -INSTANCE_COUNT ${DEFAULT_INSTANCE_COUNT} -REMOVE ${DEFAULT_REMOVE} "
+  echo "$1 usage: [-INSTANCE_COUNT <number <=10 >] [ -REMOVE (Y|N) ] - defaults -INSTANCE_COUNT ${DEFAULT_BITCOIN_CONTAINER_INSTANCE_COUNT} -REMOVE ${DEFAULT_BITCOIN_CONTAINER_REMOVE} "
 }
 
 instance_count () {
@@ -105,7 +98,7 @@ then
   then
     remove "$3" "$4"
   else
-    REMOVE=${DEFAULT_REMOVE}
+    REMOVE=${DEFAULT_BITCOIN_CONTAINER_REMOVE}
   fi
 
 elif [[ "$1" == "-REMOVE" ]]
@@ -120,8 +113,8 @@ else
     exit 1
   fi
 
-  INSTANCE_COUNT=2
-  REMOVE=${DEFAULT_REMOVE}
+  INSTANCE_COUNT=${DEFAULT_BITCOIN_CONTAINER_INSTANCE_COUNT}
+  REMOVE=${DEFAULT_BITCOIN_CONTAINER_REMOVE}
 fi
 
 echo "INSTANCE_COUNT='${INSTANCE_COUNT}'"
