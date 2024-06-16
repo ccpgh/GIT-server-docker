@@ -21,7 +21,7 @@ RUN bash -c "echo starting using github user SERVER_DOCKER_GITUSER = '${SERVER_D
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y apt-utils default-jdk \
     git gradle curl wget openssl net-tools iputils-ping traceroute autoconf pkg-config libtool emacs \
-    build-essential openssh-server openssh-client tomcat9 && \
+    build-essential openssh-server openssh-client tomcat9 iproute2 && \
     rm -rf /var/lib/apt/lists/*
 
 # Install bitcoin
