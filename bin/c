@@ -169,8 +169,21 @@ done
 
 if [[ "${FOUND}" == "N" ]]
 then
-  echo "creating network '${DOCKER_NETWORK_NAME}' with subnet '${DOCKER_NETWORK_SUBSET}' "
-  docker network create --subnet="${DOCKER_NETWORK_SUBSET}" "${DOCKER_NETWORK_NAME}"
+  #docker network create --subnet="${DOCKER_NETWORK_SUBSET}" "${DOCKER_NETWORK_NAME}"
+
+  echo creating network docker network create -d macvlan -o parent=${DOCKER_NETWORK_PARENT} \
+  --subnet "${DOCKER_NETWORK_SUBSET}" \
+  --gateway "${DOCKER_NETWORK_ROUTER}" \
+  --ip-range "${DOCKER_NETWORK_RANGE_IP}" \
+  --aux-address "'host=${DOCKER_NETWORK_AUX_IP}'" \
+  "${DOCKER_NETWORK_NAME}"
+  
+  docker network create -d macvlan -o parent=${DOCKER_NETWORK_PARENT} \
+  --subnet "${DOCKER_NETWORK_SUBSET}" \
+  --gateway "${DOCKER_NETWORK_ROUTER}" \
+  --ip-range "${DOCKER_NETWORK_RANGE_IP}" \
+  --aux-address "host=${DOCKER_NETWORK_AUX_IP}" \
+  "${DOCKER_NETWORK_NAME}"
 else
   echo "creating network SKIP"
 fi
