@@ -11,7 +11,7 @@ then
 fi
 
 # =============================
-# READ EMV
+# READ ENV
 # =============================
 
 if [[ ! -f "./env" ]]
@@ -140,15 +140,21 @@ do
   docker rm "$i"
 done
 
-echo "remooving."
+echo "removing using TAG PREFIX ${TAG_PREFIX} "
 
-for i in ` (docker images -a 2>&1) | grep -v 'REPOSITORY' | egrep "${TAG_PREFIX}|ubuntu(.*)22.04" | awk '{ print $3 }' `
+for i in ` (docker images -a 2>&1) | grep -v 'REPOSITORY' | egrep "${TAG_PREFIX}|ubuntu(.*)22.04|\<none\>" | awk '{ print $3 }' `
 do
   echo "removing image $i"
   docker rmi -f "$i"
 done
 
 docker images -a
+
+for i in ` (docker images -a 2>&1) | grep -v 'REPOSITORY' | egrep "${TAG_PREFIX}|ubuntu(.*)22.04|\<none\>" | awk '{ print $3 }' `
+do
+  echo "undeleted image $i"
+  exit 1
+done
 
 echo "checking network '${DOCKER_NETWORK_SUBSET}' using '${DOCKER_NETWORK_SUBSET_IP}' and '${DOCKER_NETWORK_NAME}' "
 
@@ -186,6 +192,12 @@ then
   "${DOCKER_NETWORK_NAME}"
 else
   echo "creating network SKIP"
+fi
+
+if [[ "$?" != "0" ]]
+then
+  echo "docker network create command failed"
+  exit 1
 fi
 
 cd ..
