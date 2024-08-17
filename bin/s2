@@ -1,0 +1,4 @@
+#!/bin/bash
+
+./s -THIS_NODE 2 -NODE_COUNT 2
+

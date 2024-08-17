@@ -1,0 +1,123 @@
+#!/bin/bash
+
+# =============================
+# DISABLED
+# =============================
+
+if [[ -f "./.disabled.flag" ]]
+then
+  echo "./.disabled.flag set. delete to continue"
+  exit 1
+fi
+
+# =============================
+# READ ENV
+# =============================
+
+if [[ ! -f "./env" ]]
+then
+  echo "./env file missing"
+  exit 1
+fi
+
+. ./env
+
+# =============================
+# FUNCTION
+# =============================
+
+usage () {
+  echo "$1 usage: -NODE_COUNT <number> -THIS_NODE <number> - where THIS_NODE must be less than NODE_COUNT and NODE_COUNT must be > 0"
+}
+
+# =============================
+# FUNCTIONS
+# =============================
+
+node_count() {
+
+    FLAG="`echo "$2" | grep '^[0][0123456789][0123456789]*$' | wc -l | awk '{ print $1 }'`"
+
+  if [[ "${FLAG}" == "1" ]]
+  then
+    usage "error: invalid NODE_COUNT value '$2'"
+    exit 1
+  fi
+
+  FLAG="`echo "$2" | grep '^[0123456789]*$' | wc -l | awk '{ print $1 }'`"
+
+  if [[ "${FLAG}" == "1" ]]
+  then
+    if [[ $2 -eq 0 ]]
+    then
+      usage "error: invalid NODE_COUNT value '$2'"
+      exit 1
+    fi
+    
+    NODE_COUNT=$2
+  else
+    usage "error: invalid NODE_COUNT value '$2'"
+    exit 1
+  fi
+}
+
+this_node() {
+  
+  echo "NYI this_node"
+#exit 1
+}
+
+# =============================
+# PREAMBLE
+# =============================
+
+if [[ "${OSTYPE}" != "linux-gnu"* && "${OSTYPE}" != "darwin"* ]]
+then
+  echo "error: only linux and macOS supported"
+  exit 1
+fi
+
+if [[ "$#" != "4" ]]
+then
+  usage "error: missing mandatory arguments."
+  exit 1
+fi
+
+THIS_NODE=
+NODE_COUNT=
+
+if [[ "$1" == "-THIS_NODE" ]]
+then
+
+  if [[ "$3" == "-NODE_COUNT" ]]
+  then
+    node_count "$3" "$4"
+  
+    this_node "$1" "$2"
+
+  else
+    usage "missing arguments."
+    exit 1
+  fi
+
+elif [[ "$1" == "-NODE_COUNT" ]]
+then
+
+  if [[ "$3" == "-THIS_NODE" ]]
+  then
+    node_count "$1" "$2"
+
+    this_node "$3" "$4"
+
+  else
+    usage "missing arguments."
+    exit 1
+  fi
+
+else
+  usage "error: invalid parameters"
+  exit 1
+fi
+
+echo "running with THIS_NODE='${THIS_NODE}' and NODE_COUNT='${NODE_COUNT}'"
+
