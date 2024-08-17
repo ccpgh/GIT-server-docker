@@ -33,7 +33,7 @@ usage () {
 instance_count () {
   FLAG="`echo "$2" | grep '^[0][0123456789]*$' | wc -l | awk '{ print $1 }'`"
 
-  if [[ "${FLAG}" == "1" ]]
+  if [[ "${FLAG}" != "1" ]]
   then
     usage "error: invalid INSTANCE_COUNT value '$2'"
     exit 1
