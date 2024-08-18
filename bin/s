@@ -36,7 +36,7 @@ usage () {
 
 node_count() {
 
-    FLAG="`echo "$2" | grep '^[0][0123456789][0123456789]*$' | wc -l | awk '{ print $1 }'`"
+  FLAG="`echo "$2" | grep '^[0][0123456789][0123456789]*$' | wc -l | awk '{ print $1 }'`"
 
   if [[ "${FLAG}" == "1" ]]
   then
@@ -63,8 +63,24 @@ node_count() {
 
 this_node() {
   
-  echo "NYI this_node"
-#exit 1
+  FLAG="`echo "$2" | grep '^[0][0123456789][0123456789]*$' | wc -l | awk '{ print $1 }'`"
+
+  if [[ "${FLAG}" == "1" ]]
+  then
+    usage "error: invalid THIS_NODE value '$2'"
+    exit 1
+  fi
+
+  FLAG="`echo "$2" | grep '^[0123456789]*$' | wc -l | awk '{ print $1 }'`"
+
+  if [[ "${FLAG}" == "1" ]]
+  then
+      
+    THIS_NODE=$2
+  else
+    usage "error: invalid THIS_NODE value '$2'"
+    exit 1
+  fi
 }
 
 # =============================
