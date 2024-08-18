@@ -162,13 +162,13 @@ do
   sleep 1
 done
 
+echo "running COMMAND='${COMMAND}'"
+
 if [[ ! -f "./${BITCOIN_EXENAME}" ]]
 then
   usage "error: file '${BITCOIN_EXENAME}' missing in `pwd` "
   exit 1
 fi
-
-echo "running COMMAND='${COMMAND}'"
 
 sleep 10
 
