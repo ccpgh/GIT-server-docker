@@ -137,3 +137,40 @@ fi
 
 echo "running with THIS_NODE='${THIS_NODE}' and NODE_COUNT='${NODE_COUNT}'"
 
+let X=1
+let DOCKER_NETWORK_HOST=$((DOCKER_NETWORK_START_HOST))
+
+cd "${BITCOIN_BINDIR}"
+
+if [[ "$?" != "0" ]]
+then
+  usage "error: unable to cd to '${BITCOIN_BINDIR}' "
+  exit 1
+fi
+
+COMMAND="./${BITCOIN_EXENAME} ${BITCOIN_PARAMS}"
+
+while [[ $X -le $NODE_COUNT ]]
+do
+
+  if [[ $X -ne $THIS_NODE ]]
+  then
+
+    COMMAND="${COMMAND} -addnode=${DOCKER_NETWORK_BASE_IP}${DOCKER_NETWORK_HOST} "
+  fi
+
+  let X=$((X + 1))
+  let DOCKER_NETWORK_HOST=$((DOCKER_NETWORK_HOST + 1))
+
+  sleep 1
+done
+
+if [[ ! -f "./${BITCOIN_EXENAME}" ]]
+then
+  usage "error: file '${BITCOIN_EXENAME}' missing in `pwd` "
+  exit 1
+fi
+
+echo "running COMMAND='${COMMAND}'"
+
+${COMMAND}
