@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# =============================
+# DISABLED
+# =============================
+
+if [[ -f "./.disabled.flag" ]]
+then
+  echo "./.disabled.flag set. delete to continue"
+  exit 1
+fi
+
+# =============================
+# READ ENV
+# =============================
+
+if [[ ! -f "./env" ]]
+then
+  echo "./env file missing"
+  exit 1
+fi
+
+exit 1
+
+# THIS IS JUST TO STORE VARIOUS EXAMPLE COMMANDS.
+
+# DO NOT RUN.
+
+./bitcoin-cli -regtest createwallet "ccwallet"
+
+./bitcoin-cli -regtest loadwallet ccwallet
+
+./bitcoin-cli -regtest getnewaddress
+
+./bitcoin-cli -regtest generatetoaddress 10 bcrt1qj44j0v49xhhauvja7vce8cfzau08lzcw398ugz
+
