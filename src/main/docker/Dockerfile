@@ -48,6 +48,8 @@ RUN echo "CACHEBUST is '$CACHEBUST'"
 
 RUN git clone https://github.com/${SERVER_DOCKER_GITUSER}/blockchain-bitcoin.git
 
+RUN git clone https://github.com/${SERVER_DOCKER_GITUSER}/blockchain-server-docker.git
+
 WORKDIR /usr/local/src/blockchain-bitcoin/bin
 
 RUN ls -l
