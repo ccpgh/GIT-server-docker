@@ -173,4 +173,6 @@ fi
 
 echo "running COMMAND='${COMMAND}'"
 
+sleep 10
+
 ${COMMAND}
