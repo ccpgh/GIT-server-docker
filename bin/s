@@ -6,8 +6,7 @@
 
 if [[ -f "./.disabled.flag" ]]
 then
-  echo "./.disabled.flag set. delete to continue"
-  exit 1
+  echo "./.disabled.flag set. delete to execute"
 fi
 
 # =============================
@@ -173,4 +172,9 @@ echo "running COMMAND='${COMMAND}'"
 
 sleep 10
 
-${COMMAND}
+if [[ -f "./.disabled.flag" ]]
+then
+  echo "skipping command ... delete flag"
+else 
+  ${COMMAND}  
+fi
