@@ -175,7 +175,7 @@ docker ps --all
 
 let DOCKER_NETWORK_HOST=$((DOCKER_NETWORK_START_HOST + 1))
 
-while [[ $X -le $INSTANCE_COUNT ]]
+while [[ $X -lt $INSTANCE_COUNT ]]
 do
   TAG_ID_INSTANCE="${TAG_ID}_${X}"
 
