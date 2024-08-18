@@ -135,8 +135,6 @@ else
   exit 1
 fi
 
-echo "running with THIS_NODE='${THIS_NODE}' and NODE_COUNT='${NODE_COUNT}'"
-
 let X=1
 let DOCKER_NETWORK_HOST=$((DOCKER_NETWORK_START_HOST))
 
