@@ -32,7 +32,13 @@ exit 1
 
 ./bitcoin-cli -regtest getnewaddress
 
+s2 bcrt1qytqwd5r30rp7e3t6pd0sljzurddlnyth4dn7qq
+
+s0 bcrt1qzsxd0tgzrth5txmnjjyx2sjdsts0ykxmp82ssm
+
 ./bitcoin-cli -regtest generatetoaddress 101 <address>
+
+./bitcoin-cli -regtest generatetoaddress 101 bcrt1qytqwd5r30rp7e3t6pd0sljzurddlnyth4dn7qq
 
 ./bitcoin-cli -regtest getbalance
 
@@ -46,8 +52,10 @@ exit 1
 
 ./bitcoin-cli -regtest sendtoaddress <address> 1.0
 
+./bitcoin-cli -regtest sendtoaddress bcrt1qzsxd0tgzrth5txmnjjyx2sjdsts0ykxmp82ssm 1.0
+
 ./bitcoin-cli -regtest getrawmempool
 
 ./bitcoin-cli -regtest getmempoolentry <txid>
 
-
+./bitcoin-cli -regtes -getinfo
