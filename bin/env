@@ -56,5 +56,5 @@ DEFAULT_BITCOIN_CONTAINER_REMOVE=Y
 # bitcoin server
 BITCOIN_BINDIR=/usr/local/bin
 BITCOIN_EXENAME=bitcoind
-BITCOIN_PARAMS="-regtest -debug=mempool -fallbackfee=0.00005 -maxmempool=1000 "
+BITCOIN_PARAMS="-regtest -debug=1 -fallbackfee=0.00005 -maxmempool=1000 "
 
